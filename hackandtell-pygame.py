@@ -22,6 +22,9 @@ def matelight_send(sock, surface):
                 data.append(pixel.g)
                 data.append(pixel.b)
                 pixels += 1
+        # TODO add chksum
+        for _ in range(len(data), len(data)+4):
+            data.append(0)
         sock.sendto(data, (UDP_IP, UDP_PORT))
     except Exception as e:
         print(e)
