@@ -58,34 +58,6 @@ def main():
 
     run = True
     while run:
-        for event in pygame.event.get():
-            if event.type == pygame.QUIT:
-                run = False
-
-            if event.type == pygame.MOUSEBUTTONUP:
-                # print(pygame.mouse.get_pos())
-                pass
-
-            if event.type == pygame.KEYDOWN:
-                if event.key == pygame.K_a:
-                    show_applause = not show_applause
-
-                elif event.key == pygame.K_p:
-                    show_preview = not show_preview
-
-                elif event.key == pygame.K_q:
-                    run = False
-
-                elif event.key == pygame.K_r:
-                    timer.stop()
-                    timer.reset()
-
-                elif event.key == pygame.K_SPACE:
-                    if not timer.running and timer.duration < TIMER_S:
-                        timer.start()
-                    else:
-                        timer.stop()
-
         if (TIMER_S - timer.duration) > 0:
             time_left_m, time_left_s = divmod(TIMER_S - timer.duration, 60)
         else:
@@ -113,7 +85,7 @@ def main():
             screen.fill((0, 0, 0))
 
             screen.blit(time_left_header_text, (SIZE_H//2, SIZE_W//10 - time_left_header_text.get_height()))
-            screen.blit(time_left_text, (SIZE_H//2, SIZE_W//10))
+            screen_time_left_rect = screen.blit(time_left_text, (SIZE_H//2, SIZE_W//10))
 
             screen.blit(time_current_header_text, (SIZE_H//2, SIZE_W//3 - time_current_header_text.get_height()))
             screen.blit(time_current_text, (SIZE_H//2, SIZE_W//3))
@@ -129,6 +101,41 @@ def main():
         pygame.display.flip()
 
         matelight_send(sock, matelight_screen)
+
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                run = False
+
+            if event.type == pygame.MOUSEBUTTONUP:
+                if show_applause:
+                    show_applause = False
+                else:
+                    mouse_pos = pygame.mouse.get_pos()
+                    if screen_time_left_rect.collidepoint(mouse_pos):
+                        if not timer.running and timer.duration < TIMER_S:
+                            timer.start()
+                        else:
+                            timer.stop()
+
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_a:
+                    show_applause = not show_applause
+
+                elif event.key == pygame.K_p:
+                    show_preview = not show_preview
+
+                elif event.key == pygame.K_q:
+                    run = False
+
+                elif event.key == pygame.K_r:
+                    timer.stop()
+                    timer.reset()
+
+                elif event.key == pygame.K_SPACE:
+                    if not timer.running and timer.duration < TIMER_S:
+                        timer.start()
+                    else:
+                        timer.stop()
 
         clock.tick(60)
 
