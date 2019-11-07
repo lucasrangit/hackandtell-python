@@ -147,7 +147,7 @@ def main():
                     else:
                         timer.stop()
 
-        clock.tick(60)
+        clock.tick(15)
 
     sock.close()
 
