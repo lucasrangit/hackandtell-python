@@ -10,6 +10,9 @@ TIMER_S = 5*60.0
 
 UDP_IP = "0.0.0.0"
 UDP_PORT = 1337
+UDP_RATE_MS = 1000
+
+MATELIGHT_UDP_SEND_EVENT = pygame.USEREVENT + 0
 
 def matelight_send(sock, surface):
     pixels = 0
@@ -61,6 +64,8 @@ def main():
 
     sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 
+    pygame.time.set_timer(MATELIGHT_UDP_SEND_EVENT, UDP_RATE_MS)
+
     show_applause = False
     show_preview = False
 
@@ -110,8 +115,6 @@ def main():
 
         pygame.display.flip()
 
-        matelight_send(sock, matelight_screen)
-
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 run = False
@@ -146,6 +149,9 @@ def main():
                         timer.start()
                     else:
                         timer.stop()
+
+            if event.type == MATELIGHT_UDP_SEND_EVENT:
+                matelight_send(sock, matelight_screen)
 
         clock.tick(15)
 
