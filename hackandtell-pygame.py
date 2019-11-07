@@ -46,10 +46,15 @@ def main():
     signs_font = pygame.font.Font("OSP-DIN.ttf", 50)
     time_font = pygame.font.Font("OSP-DIN.ttf", 100)
     applause_font = pygame.font.Font("OSP-DIN.ttf", 200)
+    status_font = pygame.font.Font("OSP-DIN.ttf", 20)
     matelight_font = pygame.font.Font("unscii-16-full.ttf", 15)
 
     time_left_header_text = signs_font.render("Time left", True, (0, 255, 0))
     time_current_header_text = signs_font.render("Current local time", True, (0, 255, 0))
+
+    ip_addrs = {i[4][0] for i in socket.getaddrinfo(socket.gethostname(), None)}
+    status = " ".join(str(x) for x in ip_addrs)
+    status_text = status_font.render(status, True, (0, 255, 0))
 
     timer = Stopwatch()
     timer.reset()
@@ -92,6 +97,8 @@ def main():
 
             screen.blit(time_current_header_text, (SIZE_H//2, SIZE_W//3 - time_current_header_text.get_height()))
             screen.blit(time_current_text, (SIZE_H//2, SIZE_W//3))
+
+            screen.blit(status_text, (0, SIZE_H - status_text.get_height()))
 
         matelight_text = matelight_font.render(time_left[:5], True, (150, 0, 150))
 
