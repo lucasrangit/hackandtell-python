@@ -3,8 +3,10 @@ from datetime import datetime
 import time
 import pygame
 from pygame.locals import *
+import requests
 import socket
 from stopwatch import Stopwatch
+import threading
 
 TIMER_S = 5*60.0
 
@@ -13,6 +15,9 @@ UDP_PORT = 1337
 UDP_RATE_MS = 1000
 
 MATELIGHT_UDP_SEND_EVENT = pygame.USEREVENT + 0
+
+votes = 0
+winners = list()
 
 def matelight_send(sock, surface):
     pixels = 0
@@ -33,8 +38,26 @@ def matelight_send(sock, surface):
         print(e)
         pass
 
+def get_winners(e):
+    global winners
+    while True:
+        e.wait()
+        r = requests.get(url='http://localhost:80/winners')
+        winners = r.json()
+        time.sleep(1.0)
+
+def get_votes(e):
+    global votes
+    while True:
+        e.wait()
+        r = requests.get(url='http://localhost:80/count')
+        votes = r.json()
+        time.sleep(1.0)
 
 def main():
+    global votes
+    global winners
+
     pygame.init()
 
     pygame.display.set_caption("Hack + Tell Timer")
@@ -64,10 +87,22 @@ def main():
 
     sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 
+    votes_event = threading.Event()
+    votes_thread = threading.Thread(name='votes', target=get_votes, args=(votes_event,))
+    votes_thread.daemon = True
+    votes_thread.start()
+
+    winners_event = threading.Event()
+    winners_thread = threading.Thread(name='winners', target=get_winners, args=(winners_event,))
+    winners_thread.daemon = True
+    winners_thread.start()
+
     pygame.time.set_timer(MATELIGHT_UDP_SEND_EVENT, UDP_RATE_MS)
 
     show_applause = False
     show_preview = False
+    show_votes = False
+    show_winners = False
 
     run = True
     while run:
@@ -107,6 +142,13 @@ def main():
 
         matelight_text = matelight_font.render(time_left[:5], True, (150, 0, 150))
 
+        if show_winners:
+            winners_text = "&".join(winners)
+            matelight_text = matelight_font.render(winners_text, True, (150, 0, 150))
+
+        elif show_votes:
+            matelight_text = matelight_font.render(str(votes), True, (150, 0, 150))
+
         if show_preview:
             screen.blit(matelight_text, (SIZE_W - matelight_text.get_width(), SIZE_H - matelight_text.get_height()))
 
@@ -143,6 +185,20 @@ def main():
                 elif event.key == pygame.K_r:
                     timer.stop()
                     timer.reset()
+
+                elif event.key == pygame.K_v:
+                    show_votes = not show_votes
+                    if show_votes:
+                        votes_event.set()
+                    else:
+                        votes_event.clear()
+
+                elif event.key == pygame.K_w:
+                    show_winners = not show_winners
+                    if show_winners:
+                        winners_event.set()
+                    else:
+                        winners_event.clear()
 
                 elif event.key == pygame.K_SPACE:
                     if not timer.running and timer.duration < TIMER_S:
