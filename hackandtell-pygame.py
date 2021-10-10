@@ -105,7 +105,7 @@ def main():
         ip_address = get_ip_address(NETWORK_INTERFACE)
     except Exception as e:
         print("Could not determine {} IP address: {}".format(NETWORK_INTERFACE, e))
-        ip_address = "Unknown"
+        ip_address = "Unknown IP"
     status_text = status_font.render(ip_address, True, (0, 255, 0))
 
     timer = Stopwatch()
