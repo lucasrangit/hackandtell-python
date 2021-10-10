@@ -1,0 +1,16 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Python: hackandtell-pygame.py",
+            "type": "python",
+            "request": "launch",
+            "program": "${workspaceFolder}/hackandtell-pygame.py",
+            "console": "integratedTerminal",
+            "env": {
+                "NETWORK_INTERFACE": "wlp2s0",
+                "MATELIGHT_IP": "192.168.1.184",
+            }
+        }
+    ]
+}
