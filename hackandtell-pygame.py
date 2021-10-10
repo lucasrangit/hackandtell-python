@@ -32,7 +32,10 @@ else:
 UDP_PORT = 1337
 UDP_RATE_MS = 500
 
-NETWORK_INTERFACE = 'wlan0'
+if os.environ.get('NETWORK_INTERFACE') is not None:
+    NETWORK_INTERFACE = os.environ.get('NETWORK_INTERFACE')
+else:
+    NETWORK_INTERFACE = 'wlan0'
 
 MATELIGHT_UDP_SEND_EVENT = pygame.USEREVENT + 0
 
@@ -98,8 +101,12 @@ def main():
     time_left_header_text = signs_font.render("Time left", True, (0, 255, 0))
     time_current_header_text = signs_font.render("Current local time", True, (0, 255, 0))
 
-    status = get_ip_address(NETWORK_INTERFACE)
-    status_text = status_font.render(status, True, (0, 255, 0))
+    try:
+        ip_address = get_ip_address(NETWORK_INTERFACE)
+    except Exception as e:
+        print("Could not determine {} IP address: {}".format(NETWORK_INTERFACE, e))
+        ip_address = "Unknown"
+    status_text = status_font.render(ip_address, True, (0, 255, 0))
 
     timer = Stopwatch()
     timer.reset()
