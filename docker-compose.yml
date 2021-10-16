@@ -1,0 +1,15 @@
+version: "2"
+
+services:
+  hackandtell-pygame:
+    build:
+      context: .
+      dockerfile: ./Dockerfile.template
+    privileged: true
+    devices:
+      - "/dev/fb0:/dev/fb0"
+      # - "/dev/input:/dev/input"
+      # - "/dev/snd:/dev/snd"
+    environment:
+      - NETWORK_INTERFACE=eth0
+      - SDL_FBDEV=/dev/fb0
