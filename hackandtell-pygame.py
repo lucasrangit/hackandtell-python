@@ -9,6 +9,7 @@ import requests
 import socket
 from stopwatch import Stopwatch
 import struct
+import sys
 import threading
 
 # from https://stackoverflow.com/a/24196955/388127
@@ -81,11 +82,19 @@ def main():
     global votes
     global winners
 
-    pygame.init()
+    try:
+        pygame.display.init()
+        pygame.init()
 
-    pygame.display.set_caption("Hack + Tell Timer")
+        pygame.display.set_caption("Hack + Tell Timer")
 
-    SIZE = SIZE_W, SIZE_H = (min(pygame.display.Info().current_w, 1024), min(pygame.display.Info().current_h, 600))
+        SIZE = SIZE_W, SIZE_H = (min(pygame.display.Info().current_w, 1024), min(pygame.display.Info().current_h, 600))
+    except pygame.error as e:
+        print("Cannot initialize display: ", e)
+        print("SDL_VIDEODRIVER = {0}".format(os.getenv("SDL_VIDEODRIVER")))
+        print("SDL_FBDEV = {0}".format(os.getenv("SDL_FBDEV")))
+        time.sleep(60)
+        sys.exit(0)
 
     screen = pygame.display.set_mode(SIZE)
     matelight_screen = pygame.Surface((40, 16))
