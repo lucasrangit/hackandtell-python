@@ -12,4 +12,5 @@ services:
       # - "/dev/snd:/dev/snd"
     environment:
       - NETWORK_INTERFACE=eth0
+      - SDL_VIDEODRIVER=fbcon
       - SDL_FBDEV=/dev/fb0
