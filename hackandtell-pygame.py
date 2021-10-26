@@ -25,10 +25,12 @@ def get_ip_address(ifname):
 
 TIMER_S = 5*60.0
 
-if os.environ.get('MATELIGHT_IP') is not None:
-    UDP_IP = os.environ.get('MATELIGHT_IP')
-else:
-    UDP_IP = "0.0.0.0"
+UDP_IPS = list()
+
+if os.environ.get('MATELIGHT_IP1') is not None:
+    UDP_IPS.append(os.environ.get('MATELIGHT_IP1'))
+if os.environ.get('MATELIGHT_IP2') is not None:
+    UDP_IPS.append(os.environ.get('MATELIGHT_IP2'))
 UDP_PORT = 1337
 UDP_RATE_MS = 500
 
@@ -56,7 +58,8 @@ def matelight_send(sock, surface):
         # TODO add optional chksum
         for _ in range(len(data), len(data)+4):
             data.append(0)
-        sock.sendto(data, (UDP_IP, UDP_PORT))
+        for ip in UDP_IPS:
+            sock.sendto(data, (ip, UDP_PORT))
     except Exception as e:
         print(e)
         pass
