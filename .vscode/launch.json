@@ -9,8 +9,9 @@
             "console": "integratedTerminal",
             "env": {
                 "NETWORK_INTERFACE": "wlp2s0",
-                "MATELIGHT_IP1": "127.0.0.1",
-                "MATELIGHT_IP2": "192.168.1.184",
+                "MATELIGHT_IP1": "172.31.79.100",
+                // "MATELIGHT_IP2": "192.168.1.184",
+                "MATELIGHT_IP2": "10.0.1.39",
             }
         }
     ]
