@@ -1,18 +1,41 @@
 #!/usr/bin/env python3
 from datetime import datetime
+import fcntl
 import time
+import os
 import pygame
 from pygame.locals import *
 import requests
 import socket
 from stopwatch import Stopwatch
+import struct
 import threading
+
+# from https://stackoverflow.com/a/24196955/388127
+def get_ip_address(ifname):
+
+    s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+    ret = socket.inet_ntoa(fcntl.ioctl(
+        s.fileno(),
+        0x8915,  # SIOCGIFADDR
+        struct.pack('256s', bytes(ifname[:15], 'utf-8'))
+    )[20:24])
+    s.close()
+    return ret
 
 TIMER_S = 5*60.0
 
-UDP_IP = "0.0.0.0"
+UDP_IP = list()
+if os.environ.get('MATELIGHT_IP') is not None:
+    UDP_IP.append(os.environ.get('MATELIGHT_IP'))
+    UDP_IP.append("172.31.79.100")
+else:
+    UDP_IP = "0.0.0.0"
+
 UDP_PORT = 1337
-UDP_RATE_MS = 1000
+UDP_RATE_MS = 500
+
+NETWORK_INTERFACE = 'wlan0'
 
 MATELIGHT_UDP_SEND_EVENT = pygame.USEREVENT + 0
 
@@ -33,7 +56,8 @@ def matelight_send(sock, surface):
         # TODO add chksum
         for _ in range(len(data), len(data)+4):
             data.append(0)
-        sock.sendto(data, (UDP_IP, UDP_PORT))
+        for ip in UDP_IP:
+            sock.sendto(data, (ip, UDP_PORT))
     except Exception as e:
         print(e)
         pass
@@ -78,8 +102,7 @@ def main():
     time_left_header_text = signs_font.render("Time left", True, (0, 255, 0))
     time_current_header_text = signs_font.render("Current local time", True, (0, 255, 0))
 
-    ip_addrs = {i[4][0] for i in socket.getaddrinfo(socket.gethostname(), None)}
-    status = " ".join(str(x) for x in ip_addrs)
+    status = get_ip_address(NETWORK_INTERFACE)
     status_text = status_font.render(status, True, (0, 255, 0))
 
     timer = Stopwatch()
@@ -140,14 +163,21 @@ def main():
 
             screen.blit(status_text, (0, SIZE_H - status_text.get_height()))
 
-        matelight_text = matelight_font.render(time_left[:5], True, (150, 0, 150))
-
         if show_winners:
             winners_text = "&".join(winners)
             matelight_text = matelight_font.render(winners_text, True, (150, 0, 150))
 
+        elif show_applause:
+            if (round(time.time()) % 2):
+                matelight_text = matelight_font.render("CLAP", False, (150, 0, 150))
+            else:
+                matelight_text = matelight_font.render("NOW", False, (150, 0, 150))
+
         elif show_votes:
             matelight_text = matelight_font.render(str(votes), True, (150, 0, 150))
+
+        else:
+            matelight_text = matelight_font.render(time_left[:5], True, (150, 0, 150))
 
         if show_preview:
             screen.blit(matelight_text, (SIZE_W - matelight_text.get_width(), SIZE_H - matelight_text.get_height()))
@@ -179,6 +209,7 @@ def main():
                 elif event.key == pygame.K_p:
                     show_preview = not show_preview
 
+                # TODO change to control-c
                 elif event.key == pygame.K_q:
                     run = False
 
