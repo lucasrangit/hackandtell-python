@@ -1,0 +1,3 @@
+[submodule "pymlgame"]
+	path = pymlgame
+	url = git@github.com:lucasrangit/pymlgame.git
