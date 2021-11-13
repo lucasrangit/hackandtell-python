@@ -22,6 +22,6 @@ while True:
         sock.sendto(data, (UDP_IP, UDP_PORT))
     except KeyboardInterrupt:
         break
-    time.sleep(0.5)
+    time.sleep(0.01)
 
 sock.close()
