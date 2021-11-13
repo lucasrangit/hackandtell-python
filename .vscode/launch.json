@@ -2,6 +2,13 @@
     "version": "0.2.0",
     "configurations": [
         {
+            "name": "Python: mate light emulator",
+            "type": "python",
+            "request": "launch",
+            "program": "${workspaceFolder}/pymlgame/emulator.py",
+            "console": "integratedTerminal"
+        },
+        {
             "name": "Python: hackandtell-pygame.py",
             "type": "python",
             "request": "launch",
