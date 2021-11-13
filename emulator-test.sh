@@ -1,5 +1,6 @@
 #!/bin/bash
-# http://matelight.rocks
+
+OUT=$(mktemp) || { echo "Failed to create temp file"; exit 1; }
 
 j=0;
 while true; do
@@ -12,8 +13,8 @@ while true; do
             #blue
             printf "\x$(printf "%x" "$((($y+$j)%255))")";
         done
-    done > buffer.crap;
+    done > $OUT;
     j=$(($j+23));
-    cat buffer.crap > /dev/udp/127.0.0.1/1337;
+    cat $OUT > /dev/udp/127.0.0.1/1337;
     echo $j
 done
