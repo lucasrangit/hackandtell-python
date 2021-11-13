@@ -1,8 +1,9 @@
 #!/usr/bin/env python3
 import random
 import socket
+import time
 
-UDP_IP = "bhnt-timer.lan"
+UDP_IP = "127.0.0.1"
 UDP_PORT = 1337
 
 sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
@@ -21,5 +22,6 @@ while True:
         sock.sendto(data, (UDP_IP, UDP_PORT))
     except KeyboardInterrupt:
         break
+    time.sleep(0.5)
 
 sock.close()
