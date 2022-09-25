@@ -32,6 +32,8 @@ def get_ip_address(ifname):
 
 TIMER_S = 5*60.0
 
+APPLAUSE_S = 5.0
+
 UDP_IPS = list()
 
 if os.environ.get('MATELIGHT_IP') is not None:
@@ -126,6 +128,9 @@ def main():
     timer = Stopwatch()
     timer.reset()
 
+    applause_timer = Stopwatch()
+    applause_timer.reset()
+
     sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 
     votes_event = threading.Event()
@@ -159,6 +164,12 @@ def main():
         if timer.running and timer.duration >= TIMER_S:
             timer.stop()
             show_applause = True
+            applause_timer.start()
+
+        if applause_timer.running and applause_timer.duration >= APPLAUSE_S:
+            show_applause = False
+            applause_timer.stop()
+            applause_timer.reset()
 
         if show_applause:
             if (round(time.time()) % 2):
@@ -213,6 +224,9 @@ def main():
             if event.type == pygame.MOUSEBUTTONUP:
                 if show_applause:
                     show_applause = False
+                    applause_timer.stop()
+                    applause_timer.reset()
+
                 else:
                     mouse_pos = pygame.mouse.get_pos()
                     if screen_time_left_rect.collidepoint(mouse_pos):
@@ -224,6 +238,11 @@ def main():
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_a:
                     show_applause = not show_applause
+                    if not applause_timer.running and applause_timer.duration < TIMER_S:
+                        applause_timer.start()
+                    else:
+                        applause_timer.stop()
+                        applause_timer.reset()
 
                 elif event.key == pygame.K_p:
                     show_preview = not show_preview
