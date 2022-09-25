@@ -11,6 +11,12 @@ from stopwatch import Stopwatch
 import struct
 import threading
 
+# handle systemd SIGHUP
+import signal
+def handler(signum, frame):
+    pass
+signal.signal(signal.SIGHUP, handler)
+
 # from https://stackoverflow.com/a/24196955/388127
 def get_ip_address(ifname):
 
@@ -27,10 +33,14 @@ TIMER_S = 5*60.0
 
 UDP_IPS = list()
 
+if os.environ.get('MATELIGHT_IP') is not None:
+    UDP_IPS.append(os.environ.get('MATELIGHT_IP'))
 if os.environ.get('MATELIGHT_IP1') is not None:
     UDP_IPS.append(os.environ.get('MATELIGHT_IP1'))
 if os.environ.get('MATELIGHT_IP2') is not None:
     UDP_IPS.append(os.environ.get('MATELIGHT_IP2'))
+print("Matelight IPs:", UDP_IPS)
+
 UDP_PORT = 1337
 UDP_RATE_MS = 500
 
@@ -38,6 +48,7 @@ if os.environ.get('NETWORK_INTERFACE') is not None:
     NETWORK_INTERFACE = os.environ.get('NETWORK_INTERFACE')
 else:
     NETWORK_INTERFACE = 'wlan0'
+print("Network interface:", NETWORK_INTERFACE)
 
 MATELIGHT_UDP_SEND_EVENT = pygame.USEREVENT + 0
 
