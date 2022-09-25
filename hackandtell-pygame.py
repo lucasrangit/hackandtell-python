@@ -2,6 +2,7 @@
 from datetime import datetime
 import fcntl
 import time
+import math
 import os
 import pygame
 from pygame.locals import *
@@ -148,11 +149,12 @@ def main():
     while run:
         if (TIMER_S - timer.duration) > 0:
             time_left_m, time_left_s = divmod(TIMER_S - timer.duration, 60)
+            time_left_s = math.floor(time_left_s)
         else:
             time_left_m, time_left_s = 0, 0
-        time_left = '{0:02.0f}:{1:06.3f}'.format(time_left_m, time_left_s)
+        time_left = '{0:02.0f}:{1:02.0f}'.format(time_left_m, time_left_s)
         time_left_text = time_font.render(time_left, True, (0, 255, 0))
-        time_current_text = time_font.render(datetime.now().strftime("%H:%M:%S.%f")[:-3], True, (0, 255, 0))
+        time_current_text = time_font.render(datetime.now().strftime("%H:%M:%S"), True, (0, 255, 0))
 
         if timer.running and timer.duration >= TIMER_S:
             timer.stop()
