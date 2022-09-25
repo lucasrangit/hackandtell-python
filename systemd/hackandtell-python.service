@@ -9,7 +9,7 @@ Wants=network-online.target
 Environment="SDL_FBDEV=/dev/fb0"
 Environment="MATELIGHT_IP=10.0.1.39"
 WorkingDirectory=/home/pi/hackandtell-python
-ExecStart==/usr/bin/python3 hackandtell-pygame.py
+ExecStart=/usr/bin/python3 hackandtell-pygame.py
 Restart=always
 RestartSec=10
 StandardOutput=syslog
