@@ -1,0 +1,20 @@
+# /etc/systemd/system/hackandtell-python.service
+[Unit]
+Description=Vote by MAC Server
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+# TODO move Environment to local.conf override
+Environment="SDL_FBDEV=/dev/fb0"
+Environment="MATELIGHT_IP=10.0.1.39"
+WorkingDirectory=/home/pi/hackandtell-python
+ExecStart==/usr/bin/python3 hackandtell-pygame.py
+Restart=always
+RestartSec=10
+StandardOutput=syslog
+StandardError=syslog
+SyslogIdentifier=hackandtell-python
+
+[Install]
+WantedBy=multi-user.target
