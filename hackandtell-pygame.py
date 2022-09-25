@@ -122,8 +122,7 @@ def main():
         ip_address = get_ip_address(NETWORK_INTERFACE)
     except Exception as e:
         print("Could not determine {} IP address: {}".format(NETWORK_INTERFACE, e))
-        ip_address = "Unknown IP"
-    status_text = status_font.render(ip_address, True, (0, 255, 0))
+        ip_address = "ip: unknown"
 
     timer = Stopwatch()
     timer.reset()
@@ -152,6 +151,11 @@ def main():
 
     run = True
     while run:
+        status_text_text = ip_address
+        status_text_text += "    vote: http://" + ip_address
+        status_text_text += "    config: http://" + ip_address + "/config"
+        status_text = status_font.render(status_text_text, True, (0, 255, 0))
+
         if (TIMER_S - timer.duration) > 0:
             time_left_m, time_left_s = divmod(TIMER_S - timer.duration, 60)
             time_left_s = math.floor(time_left_s)
@@ -191,7 +195,7 @@ def main():
             screen.blit(time_current_header_text, (SIZE_H//2, SIZE_W//3 - time_current_header_text.get_height()))
             screen.blit(time_current_text, (SIZE_H//2, SIZE_W//3))
 
-            screen.blit(status_text, (0, SIZE_H - status_text.get_height()))
+        screen.blit(status_text, (0, SIZE_H - status_text.get_height()))
 
         if show_winners:
             winners_text = "&".join(winners)
